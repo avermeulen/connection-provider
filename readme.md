@@ -1,8 +1,8 @@
 # Connection Provider
 
-Middleware that enables decoupling resources and components in Express JS. Making testing easier.
+Express JS middleware that enables decoupling resources and components, making testing easier.
 
-Currently only supporting mysql connections.
+Only supporting mysql connections.
 
 ## How to use it:
 
