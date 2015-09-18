@@ -10,6 +10,8 @@ Only supporting mysql connections.
 
 //In Express JS
 
+var connectionProvider = require('connection-provider');
+
 var mysqlDetails = {
       host: 'localhost',
       user: 'user_name',
@@ -26,21 +28,17 @@ var serviceSetupCallback = function(connection){
 	}
 };
 
-var myConnectionProvider = new ConnectionProvider(mysqlDetails, serviceSetupCallback);
+app.use(connectionProvider(mysqlDetails, serviceSetupCallback));
 
-app.use(myConnectionProvider.setupProvider);
-
-//this enables
-
+//this adds a services object to request
 app.get('/users', function(req, res){
 
-  req.services(function(services){
-
+  req.services(function(err, services){
+    
     serviceName = services.serviceName;
-
-    var users = serviceName.getUsers();
-
-    res.send(users);
+    serviceName.getUsers(function(err, users){
+      res.send(users);
+    });
 
   });
 
