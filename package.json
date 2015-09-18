@@ -1,0 +1,21 @@
+{
+  "name": "connection-provider",
+  "version": "1.0.0",
+  "description": "An easy way to provide resources and connections to Object instances",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mysql",
+    "database",
+    "connections",
+    "resources",
+    "provider"
+  ],
+  "author": "Andre Vermeulen <andre.vermeulen@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "mysql": "^2.9.0"
+  }
+}
