@@ -36,6 +36,6 @@ module.exports = function (dbParams, servicesSetup) {
     	next();
     }
 
-	this.setupProvider = setupProvider;
+	return setupProvider;
 
 };
