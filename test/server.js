@@ -25,12 +25,13 @@ var serviceSetupCallback = function(connection){
 app.use(connectionProvider(dbOptions, serviceSetupCallback));
 
 app.get('/', function (req, res, next) {
-  req.services(function(err, services){
-    var userService = services.userService;
-    userService.users(function(err, users){
-      if (err) return next(err);
-      res.send(users);
-    });
+  req.getServices()
+  .then(function(services){
+      var userService = services.userService;
+      userService.users(function(err, users){
+          if (err) return next(err);
+          res.send(users);
+      });
   });
 });
 
