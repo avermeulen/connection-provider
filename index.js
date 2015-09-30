@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+var Promise = require('bluebird');
 
 module.exports = function (dbParams, servicesSetup) {
 
@@ -11,14 +12,15 @@ module.exports = function (dbParams, servicesSetup) {
     var setupProvider = function(req, res, next){
 
     	var poolConnection;
-    	req.services = function (callback) {
-
-            pool.getConnection(function (err, connection) {
-                if (err){
-                	return callback(err);
-                }
-                poolConnection = connection;
-                callback(null, servicesSetup(poolConnection));
+    	req.getServices = function () {
+            return new Promise(function(resolve, reject){
+                pool.getConnection(function (err, connection) {
+                    if (err){
+                        return resolve(err);
+                    }
+                    poolConnection = connection;
+                    resolve(servicesSetup(poolConnection));
+                });
             });
         };
 
