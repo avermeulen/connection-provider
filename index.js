@@ -1,37 +1,77 @@
 var mysql = require('mysql');
 var Promise = require('bluebird');
+var MongoClient = require('mongodb').MongoClient;
+
+function MySQLConnection(parameters, cb){
+    var pool = mysql.createPool(parameters);
+    var poolConnection;
+
+    this.createConnection = function(){
+        return new Promise(function(resolve, reject){
+            pool.getConnection(function (err, connection) {
+                if (err) return resolve(err);
+                poolConnection = connection;
+                resolve(cb(connection));
+            });
+        });
+    };
+
+    this.releaseConnection = function(){
+        if (poolConnection){
+            poolConnection.release();
+        }
+    }
+}
+
+function MongoConnection(parameters, cb){
+    var connection;
+
+    this.createConnection = function(){
+        return new Promise(function(resolve, reject){
+            MongoClient.connect(parameters.url, function(err, db) {
+                if (err) return resolve(err);
+                connection = db;
+                resolve(cb(db));
+            });
+        });
+    }
+
+    this.releaseConnection = function(){
+        if (connection){
+            connection.close();
+        }
+    }
+}
+
 
 module.exports = function (dbParams, servicesSetup) {
 
     if (!dbParams) throw Error('Database parameters not supplied');
         if (!servicesSetup) throw Error('Service setup callback not supplied');
 
-		this.dbParams = dbParams;
-		var pool = mysql.createPool(dbParams);
+    var databaseConnection;
 
     var setupProvider = function(req, res, next){
 
-    	var poolConnection;
-    	req.getServices = function () {
-            return new Promise(function(resolve, reject){
-                pool.getConnection(function (err, connection) {
-                    if (err){
-                        return resolve(err);
-                    }
-                    poolConnection = connection;
-                    resolve(servicesSetup(poolConnection));
-                });
-            });
-        };
+        var targetDatabase = dbParams['target-database'] || 'mysql';
+
+        if (targetDatabase === "mysql"){
+            databaseConnection =  new MySQLConnection(dbParams, servicesSetup);
+        }
+        else if (targetDatabase === "mongodb"){
+            databaseConnection =  new MongoConnection(dbParams, servicesSetup);
+        }
+        else{
+            console.log('invalid databse : ' + targetDatabase);
+        }
+
+        req.getServices = databaseConnection.createConnection;
 
 		var end = res.end;
 		res.end = function(data, encoding){
-            if (poolConnection){
-            	poolConnection.release();
-            }
+            databaseConnection.releaseConnection;
             res.end = end;
             res.end(data, encoding);
-
 		};
 
 		//
