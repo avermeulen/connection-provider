@@ -3,22 +3,21 @@ var app = express();
 var connectionProvider = require('../index.js');
 
 var dbOptions = {
-    host: 'localhost',
-    user: 'gh',
-    password: 'password',
-    port: 3306,
-    database: 'gh_tracker'
+    'target-database' : "mongodb",
+    url : "mongodb://localhost:27017/connections"
 };
 
-var Service = function(connection){
+
+var MongoService = function(db){
   this.users = function(cb){
-    connection.query("select * from coders", cb);
+      var users = db.collection('users');
+      users.find({}).toArray(cb);
   };
-}
+};
 
 var serviceSetupCallback = function(connection){
 	return {
-		userService : new Service(connection),
+		userService : new MongoService(connection),
 	}
 };
 
