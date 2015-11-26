@@ -33,14 +33,14 @@ app.use(connectionProvider(mysqlDetails, serviceSetupCallback));
 //this adds a services object to request
 app.get('/users', function(req, res){
 
-  req.services(function(err, services){
-    
-    serviceName = services.serviceName;
-    serviceName.getUsers(function(err, users){
-      res.send(users);
-    });
-
-  });
+  req.getServices()
+        .then(function(services){
+            var dataService = services.dataService;
+            return dataService.getUsers()
+        })
+        .then(function(users){
+            res.render('users', { users : users });
+        });
 
 });
 
