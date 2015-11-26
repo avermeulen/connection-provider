@@ -11,14 +11,17 @@ function MySQLConnection(parameters, cb){
             pool.getConnection(function (err, connection) {
                 if (err) return resolve(err);
                 poolConnection = connection;
-                resolve(cb(connection));
+                resolve(cb(poolConnection));
             });
         });
     };
 
     this.releaseConnection = function(){
         if (poolConnection){
-            poolConnection.release();
+            //console.log('releasing mysql connection');
+            //poolConnection.release();
+            //mmm - just releasing the connection cause errors under high loads - replacing it with destroy for now
+            poolConnection.destroy();
         }
     }
 }
@@ -69,7 +72,13 @@ module.exports = function (dbParams, servicesSetup) {
 
 		var end = res.end;
 		res.end = function(data, encoding){
-            databaseConnection.releaseConnection;
+            try{
+                databaseConnection.releaseConnection();
+            }
+            catch(err){
+                console.log(err.stack);
+            }
+
             res.end = end;
             res.end(data, encoding);
 		};

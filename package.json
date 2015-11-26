@@ -1,6 +1,6 @@
 {
   "name": "connection-provider",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An easy way to provide resources and connections to Object instances",
   "main": "index.js",
   "scripts": {
