@@ -16,7 +16,7 @@
   "author": "Andre Vermeulen <andre.vermeulen@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "bluebird": "^2.10.1",
+    "bluebird": "^3.2.2",
     "mongodb": "^2.0.45",
     "mysql": "^2.9.0"
   }
